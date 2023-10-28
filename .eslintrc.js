@@ -20,6 +20,7 @@ module.exports = {
     "jest/valid-title": "off",
     "no-console": "off",
     "no-alert": "off",
+    "no-shadow": ["off"],
     "no-restricted-globals": "off",
     "no-promise-executor-return": "off",
     "no-plusplus": "off",
