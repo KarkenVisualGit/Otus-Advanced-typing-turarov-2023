@@ -2,9 +2,9 @@ name: Sanity Check
 
 on:
   push:
-    branches: ["[advance-typing-2023"]
+    branches: ["advance-typing-2023"]
   pull_request:
-    branches: ["[advance-typing-2023"]
+    branches: ["advance-typing-2023"]
 permissions:
   contents: write
 
