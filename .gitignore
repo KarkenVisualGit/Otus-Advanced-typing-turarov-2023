@@ -1,2 +1,16 @@
+.cache/
+*.log*
+.ssh/
+coverage
+/dist
+/prod
 node_modules
-.husky
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
