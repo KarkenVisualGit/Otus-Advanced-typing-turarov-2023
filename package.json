@@ -49,6 +49,8 @@
   },
   "scripts": {
     "test": "jest",
+    "lint": "prettier --check . && eslint .",
+    "lint:fix": "prettier --write . && eslint . --fix",
     "build": "webpack --mode=production --node-env=production",
     "build:dev": "webpack --mode=development",
     "build:prod": "webpack --mode=production --node-env=production",
