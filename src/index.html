@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Calendar</title>
+  <!-- <link rel="stylesheet" href="style/style.css"> -->
+</head>
+
+<body>
+  <div class="container">
+    <h1>Task Calendar</h1>
+    <div class="task-form">
+      <textarea id="taskText" class="task-text" placeholder="Task text" rows="3"></textarea>
+      <input type="date" id="taskDate">
+      <select id="taskStatus">
+        <option value="">Any Status</option>
+        <option value="new">New</option>
+        <option value="in progress">In Progress</option>
+        <option value="done">Done</option>
+      </select>
+      <input type="text" id="taskTags" placeholder="Tags (comma-separated)">
+      <button id="addOrUpdateTaskButton">Add/Update Task</button>
+    </div>
+    <div class="filters">
+      <input type="text" id="filterText" placeholder="Filter by text">
+      <input type="date" id="filterDate">
+      <select id="filterStatus">
+        <option value="">Any Status</option>
+        <option value="new">New</option>
+        <option value="in progress">In Progress</option>
+        <option value="done">Done</option>
+      </select>
+      <input type="text" id="filterTags" placeholder="Filter by tags (comma-separated)">
+      <button id="applyFiltersButton">Apply Filters</button>
+    </div>
+    <ul class="task-list" id="taskList"></ul>
+  </div>
+
+</body>
+
+</html>
