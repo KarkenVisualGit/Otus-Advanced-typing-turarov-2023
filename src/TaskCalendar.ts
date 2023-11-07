@@ -134,6 +134,39 @@ export class TaskCalendar {
         this.clearForm();
     }
 
+    public applyFilters(): void {
+        const filterTextElement = document.getElementById('filterText') as HTMLInputElement;
+        const filterDateElement = document.getElementById('filterDate') as HTMLInputElement;
+        const filterStatusElement = document.getElementById('filterStatus') as HTMLSelectElement;
+        const filterTagsElement = document.getElementById('filterTags') as HTMLInputElement;
+
+        const filter: TaskFilter = {
+            text: filterTextElement.value,
+            date: filterDateElement.value,
+            status: filterStatusElement.value as 'new' | 'in progress' | 'done' || undefined,
+
+            tags: filterTagsElement.value ? filterTagsElement.value.split(',')
+            .map(tag => tag.trim()) : undefined,
+        };
+
+        const tasks = this.getTasks();
+        const filteredTasks = tasks.filter(task => this.taskMatchesFilter(task, filter));
+        this.renderTasks(filteredTasks);
+    }
+
+    private taskMatchesFilter(task: Task, filter: TaskFilter): boolean {
+        const textToCompare = filter.text?.trim().toLowerCase() ?? "";
+        const tagsToCompare = filter.tags?.map(tag => tag.trim().toLowerCase()) ?? [];
+
+        const textMatches = !filter.text || task.text.toLowerCase().includes(textToCompare);
+        const dateMatches = !filter.date || task.date === filter.date;
+        const statusMatches = !filter.status || task.status === filter.status;
+        const tagsMatches = tagsToCompare.length === 0 || tagsToCompare.some(filterTag =>
+            task.tags.some(taskTag => taskTag.toLowerCase().includes(filterTag)));
+
+        return textMatches && dateMatches && statusMatches && tagsMatches;
+    }
+
     private generateId(): string {
 
         return Date.now().toString(36) + Math.random().toString(36).substring(2);
