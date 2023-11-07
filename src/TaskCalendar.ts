@@ -92,6 +92,14 @@ export class TaskCalendar {
         this.renderTasks(tasks);
     }
 
+    private clearForm(): void {
+        (document.getElementById('taskText') as HTMLTextAreaElement).value = '';
+        (document.getElementById('taskDate') as HTMLInputElement).value = '';
+        (document.getElementById('taskStatus') as HTMLSelectElement).value = '';
+        (document.getElementById('taskTags') as HTMLInputElement).value = '';
+        delete (document.getElementById('addOrUpdateTaskButton') as HTMLButtonElement)
+            .dataset.editingId;
+    }
 
 
 
