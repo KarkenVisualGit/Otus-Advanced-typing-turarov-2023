@@ -21,5 +21,13 @@ export class TaskCalendar {
         
     }
 
+    private getTasks(): Task[] {
+        const tasksJSON = localStorage.getItem(this.namespace);
+        if (tasksJSON) {
+            return JSON.parse(tasksJSON);
+        }
+        return [];
+    }
+
    
 }
