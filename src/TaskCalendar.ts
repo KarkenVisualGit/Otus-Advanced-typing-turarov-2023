@@ -1,3 +1,19 @@
+import { initializeApp } from "firebase/app";
+import { Database, getDatabase, ref, set } from "firebase/database";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyCZsRRy7BwXZOnYz-3BIo-o4WuHl5XKkCE",
+    authDomain: "task-calendar-turarov.firebaseapp.com",
+    databaseURL: "https://task-calendar-turarov-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "task-calendar-turarov",
+    storageBucket: "task-calendar-turarov.appspot.com",
+    messagingSenderId: "685980356315",
+    appId: "1:685980356315:web:b12ef3cf06c0bef5a646fe",
+    measurementId: "G-02B3TBFPNX"
+};
+
+const app = initializeApp(firebaseConfig);
+
 export interface Task {
     id: string;
     text: string;
@@ -109,6 +125,20 @@ export class TaskCalendar {
             .dataset.editingId;
     }
 
+    private async writeToDoList(id: string, text: string,
+        date: string, status: string, tags: string[]): Promise<void> {
+        const db: Database = getDatabase();
+        const reference = ref(db, 'todos/' + id);
+
+        await set(reference, {
+            text: text,
+            date: date,
+            status: status,
+            tags: tags.join(', ')
+        });
+    }
+
+
     public async addOrUpdateTask(): Promise<void> {
         const taskTextElement = document.getElementById('taskText') as HTMLTextAreaElement;
         const taskDateElement = document.getElementById('taskDate') as HTMLInputElement;
@@ -118,7 +148,7 @@ export class TaskCalendar {
             .dataset.editingId;
 
         const newTask: Task = {
-            id: this.generateId(),
+            id: editingId || this.generateId(),
             text: taskTextElement.value,
             date: taskDateElement.value,
             status: taskStatusElement.value as 'new' | 'in progress' | 'done',
@@ -126,18 +156,18 @@ export class TaskCalendar {
         };
 
 
-        let tasks = await this.getTasks();
-        if (editingId) {
-            const taskIndex = tasks.findIndex(task => task.id === editingId);
-            if (taskIndex > -1) {
-                tasks[taskIndex] = { ...tasks[taskIndex], ...newTask, id: editingId };
-            }
+        const tasks = await this.getTasks();
+        const taskIndex = tasks.findIndex(task => task.id === newTask.id);
+        if (taskIndex > -1) {
+            tasks[taskIndex] = newTask;
         } else {
-            tasks.push({ ...newTask, id: this.generateId() });
+            tasks.push(newTask);
         }
 
         await this.setTasks(tasks);
         await this.renderTasks();
+
+        await this.writeToDoList(newTask.id, newTask.text, newTask.date, newTask.status, newTask.tags);
 
         await this.clearForm();
     }
