@@ -48,7 +48,52 @@ export class TaskCalendar {
             .dataset.editingId = task.id;
     }
 
-    
+    private renderTasks(tasks?: Task[]): void {
+        const taskListElement = document.getElementById('taskList') as HTMLUListElement;
+        taskListElement.innerHTML = '';
+        const tasksToRender = tasks || this.getTasks();
+
+        tasksToRender.forEach((task) => {
+            const taskElement = document.createElement('li');
+            taskElement.classList.add('task-item-flex');
+            const editButton = document.createElement('button');
+            editButton.textContent = 'Edit';
+            editButton.classList.add('edit-btn');
+            editButton.addEventListener('click', () => this.editTask(task.id));
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.classList.add('delete-btn');
+            deleteButton.addEventListener('click', () => this.deleteTask(task.id));
+
+            const dateElement = document.createElement('span');
+            dateElement.textContent = `Date: ${task.date}`;
+            const statusElement = document.createElement('span');
+            statusElement.textContent = `Status: ${task.status}`;
+            const tagsElement = document.createElement('span');
+            tagsElement.textContent = `Tags: ${task.tags.join(', ')}`;
+
+            taskElement.appendChild(document.createTextNode(task.text));
+            taskElement.appendChild(dateElement);
+            taskElement.appendChild(statusElement);
+            taskElement.appendChild(tagsElement);
+            taskElement.appendChild(editButton);
+
+            taskElement.appendChild(deleteButton);
+            taskListElement.appendChild(taskElement);
+        });
+    }
+
+    private deleteTask(taskId: string): void {
+        let tasks = this.getTasks().filter(task => task.id !== taskId);
+
+        this.setTasks(tasks);
+
+        this.renderTasks(tasks);
+    }
+
+
+
 
 
 }
