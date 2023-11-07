@@ -101,7 +101,43 @@ export class TaskCalendar {
             .dataset.editingId;
     }
 
+    public addOrUpdateTask(): void {
+        const taskTextElement = document.getElementById('taskText') as HTMLTextAreaElement;
+        const taskDateElement = document.getElementById('taskDate') as HTMLInputElement;
+        const taskStatusElement = document.getElementById('taskStatus') as HTMLSelectElement;
+        const taskTagsElement = document.getElementById('taskTags') as HTMLInputElement;
+        const editingId = (document.getElementById('addOrUpdateTaskButton') as HTMLButtonElement)
+            .dataset.editingId;
 
+        const newTask: Task = {
+            id: this.generateId(),
+            text: taskTextElement.value,
+            date: taskDateElement.value,
+            status: taskStatusElement.value as 'new' | 'in progress' | 'done',
+            tags: taskTagsElement.value.split(',').map(tag => tag.trim()),
+        };
+
+
+        let tasks = this.getTasks();
+        if (editingId) {
+            const taskIndex = tasks.findIndex(task => task.id === editingId);
+            if (taskIndex > -1) {
+                tasks[taskIndex] = { ...tasks[taskIndex], ...newTask, id: editingId };
+            }
+        } else {
+            tasks.push({ ...newTask, id: this.generateId() });
+        }
+
+        this.setTasks(tasks);
+        this.renderTasks();
+
+        this.clearForm();
+    }
+
+    private generateId(): string {
+
+        return Date.now().toString(36) + Math.random().toString(36).substring(2);
+    }
 
 
 }
