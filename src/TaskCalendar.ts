@@ -21,13 +21,17 @@ export class TaskCalendar {
         document.addEventListener('DOMContentLoaded', this.init.bind(this));
     }
 
-    private init(): void {
-        document.getElementById('addOrUpdateTaskButton')?.addEventListener('click', this.addOrUpdateTask.bind(this));
-        document.getElementById('applyFiltersButton')?.addEventListener('click', this.applyFilters.bind(this));
-        this.renderTasks();
+    private async init(): Promise<void> {
+        document.getElementById('addOrUpdateTaskButton')?.addEventListener('click', async () => {
+            await this.addOrUpdateTask();
+        });
+        document.getElementById('applyFiltersButton')?.addEventListener('click', async () => {
+            await this.applyFilters();
+        });
+        await this.renderTasks();
     }
 
-    private getTasks(): Task[] {
+    private async getTasks(): Promise<Task[]> {
         const tasksJSON = localStorage.getItem(this.namespace);
         if (tasksJSON) {
             return JSON.parse(tasksJSON);
@@ -35,12 +39,12 @@ export class TaskCalendar {
         return [];
     }
 
-    private setTasks(tasks: Task[]): void {
+    private async setTasks(tasks: Task[]): Promise<void> {
         localStorage.setItem(this.namespace, JSON.stringify(tasks));
     }
 
-    private editTask(taskId: string): void {
-        const task = this.getTasks().find(task => task.id === taskId);
+    private async editTask(taskId: string): Promise<void> {
+        const task = await this.getTasks().then(tasks => tasks.find(task => task.id === taskId));
         if (!task) {
             return;
         }
@@ -54,10 +58,10 @@ export class TaskCalendar {
             .dataset.editingId = task.id;
     }
 
-    private renderTasks(tasks?: Task[]): void {
+    private async renderTasks(tasks?: Task[]): Promise<void> {
         const taskListElement = document.getElementById('taskList') as HTMLUListElement;
         taskListElement.innerHTML = '';
-        const tasksToRender = tasks || this.getTasks();
+        const tasksToRender = tasks || await this.getTasks();
 
         tasksToRender.forEach((task) => {
             const taskElement = document.createElement('li');
@@ -90,15 +94,13 @@ export class TaskCalendar {
         });
     }
 
-    private deleteTask(taskId: string): void {
-        let tasks = this.getTasks().filter(task => task.id !== taskId);
-
-        this.setTasks(tasks);
-
-        this.renderTasks(tasks);
+    private async deleteTask(taskId: string): Promise<void> {
+        const tasks = await this.getTasks().then(tasks => tasks.filter(task => task.id !== taskId));
+        await this.setTasks(tasks);
+        await this.renderTasks(tasks);
     }
 
-    private clearForm(): void {
+    private async clearForm(): Promise<void> {
         (document.getElementById('taskText') as HTMLTextAreaElement).value = '';
         (document.getElementById('taskDate') as HTMLInputElement).value = '';
         (document.getElementById('taskStatus') as HTMLSelectElement).value = '';
@@ -107,7 +109,7 @@ export class TaskCalendar {
             .dataset.editingId;
     }
 
-    public addOrUpdateTask(): void {
+    public async addOrUpdateTask(): Promise<void> {
         const taskTextElement = document.getElementById('taskText') as HTMLTextAreaElement;
         const taskDateElement = document.getElementById('taskDate') as HTMLInputElement;
         const taskStatusElement = document.getElementById('taskStatus') as HTMLSelectElement;
@@ -124,7 +126,7 @@ export class TaskCalendar {
         };
 
 
-        let tasks = this.getTasks();
+        let tasks = await this.getTasks();
         if (editingId) {
             const taskIndex = tasks.findIndex(task => task.id === editingId);
             if (taskIndex > -1) {
@@ -134,13 +136,13 @@ export class TaskCalendar {
             tasks.push({ ...newTask, id: this.generateId() });
         }
 
-        this.setTasks(tasks);
-        this.renderTasks();
+        await this.setTasks(tasks);
+        await this.renderTasks();
 
-        this.clearForm();
+        await this.clearForm();
     }
 
-    public applyFilters(): void {
+    public async applyFilters(): Promise<void> {
         const filterTextElement = document.getElementById('filterText') as HTMLInputElement;
         const filterDateElement = document.getElementById('filterDate') as HTMLInputElement;
         const filterStatusElement = document.getElementById('filterStatus') as HTMLSelectElement;
@@ -155,9 +157,9 @@ export class TaskCalendar {
                 .map(tag => tag.trim()) : undefined,
         };
 
-        const tasks = this.getTasks();
+        const tasks = await this.getTasks();
         const filteredTasks = tasks.filter(task => this.taskMatchesFilter(task, filter));
-        this.renderTasks(filteredTasks);
+        await this.renderTasks(filteredTasks);
     }
 
     private taskMatchesFilter(task: Task, filter: TaskFilter): boolean {
