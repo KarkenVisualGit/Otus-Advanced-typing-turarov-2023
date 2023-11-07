@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { Database, getDatabase, ref, set } from "firebase/database";
+import { Database, getDatabase, ref, set, get, update, remove } from "firebase/database";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCZsRRy7BwXZOnYz-3BIo-o4WuHl5XKkCE",
@@ -13,6 +13,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+const db: Database = getDatabase();
 
 export interface Task {
     id: string;
@@ -110,10 +111,17 @@ export class TaskCalendar {
         });
     }
 
+    private async delToDoList(id: string): Promise<void> {
+        const reference = ref(db, 'todos/' + id);
+
+        await remove(reference);
+    }
+
     private async deleteTask(taskId: string): Promise<void> {
         const tasks = await this.getTasks().then(tasks => tasks.filter(task => task.id !== taskId));
         await this.setTasks(tasks);
         await this.renderTasks(tasks);
+        await this.delToDoList(taskId);
     }
 
     private async clearForm(): Promise<void> {
@@ -127,7 +135,6 @@ export class TaskCalendar {
 
     private async writeToDoList(id: string, text: string,
         date: string, status: string, tags: string[]): Promise<void> {
-        const db: Database = getDatabase();
         const reference = ref(db, 'todos/' + id);
 
         await set(reference, {
