@@ -56,7 +56,8 @@
     "build:prod": "webpack --mode=production --node-env=production",
     "watch": "webpack --watch",
     "start": "webpack serve --mode development -c webpack.config.js",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "check-ts": "tsc --noEmit"
   },
   "repository": {
     "type": "git",
