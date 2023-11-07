@@ -18,7 +18,13 @@ export class TaskCalendar {
 
     constructor(namespace: string) {
         this.namespace = namespace;
+        document.addEventListener('DOMContentLoaded', this.init.bind(this));
+    }
 
+    private init(): void {
+        document.getElementById('addOrUpdateTaskButton')?.addEventListener('click', this.addOrUpdateTask.bind(this));
+        document.getElementById('applyFiltersButton')?.addEventListener('click', this.applyFilters.bind(this));
+        this.renderTasks();
     }
 
     private getTasks(): Task[] {
@@ -146,7 +152,7 @@ export class TaskCalendar {
             status: filterStatusElement.value as 'new' | 'in progress' | 'done' || undefined,
 
             tags: filterTagsElement.value ? filterTagsElement.value.split(',')
-            .map(tag => tag.trim()) : undefined,
+                .map(tag => tag.trim()) : undefined,
         };
 
         const tasks = this.getTasks();
