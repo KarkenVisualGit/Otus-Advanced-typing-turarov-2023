@@ -39,18 +39,18 @@ export interface TaskFilter {
 }
 
 export class TaskCalendar {
-	private namespace: string;
+	protected namespace: string;
 
-	private deletedFromFirebase: Set<string> = new Set();
+	protected deletedFromFirebase: Set<string> = new Set();
 
-	private idsFromFirebase: Set<string> = new Set();
+	protected idsFromFirebase: Set<string> = new Set();
 
 	constructor(namespace: string) {
 		this.namespace = namespace;
 		document.addEventListener("DOMContentLoaded", this.init.bind(this));
 	}
 
-	private async init(): Promise<void> {
+	protected async init(): Promise<void> {
 		document
 			.getElementById("addOrUpdateTaskButton")
 			?.addEventListener("click", async () => {
@@ -77,7 +77,7 @@ export class TaskCalendar {
 		await this.renderTasks();
 	}
 
-	private async getTasks(): Promise<Task[]> {
+	protected async getTasks(): Promise<Task[]> {
 		const tasksJSON = localStorage.getItem(this.namespace);
 		if (tasksJSON) {
 			return JSON.parse(tasksJSON);
@@ -85,7 +85,7 @@ export class TaskCalendar {
 		return [];
 	}
 
-	private async getToDoList(): Promise<Task[]> {
+	protected async getToDoList(): Promise<Task[]> {
 		const reference = ref(db, "todos/");
 
 		try {
@@ -112,17 +112,17 @@ export class TaskCalendar {
 		}
 	}
 
-	private async setTasks(tasks: Task[]): Promise<void> {
+	protected async setTasks(tasks: Task[]): Promise<void> {
 		localStorage.setItem(this.namespace, JSON.stringify(tasks));
 	}
 
-	private async getAllTasks(): Promise<Task[]> {
+	protected async getAllTasks(): Promise<Task[]> {
 		const localTasks = await this.getTasks();
 		const firebaseTasks = await this.getToDoList();
 		return [...localTasks, ...firebaseTasks];
 	}
 
-	private async editTask(taskId: string): Promise<void> {
+	protected async editTask(taskId: string): Promise<void> {
 		const tasks = await this.getAllTasks();
 		const task = tasks.find((innertask) => innertask.id === taskId);
 		if (!task) {
@@ -142,7 +142,7 @@ export class TaskCalendar {
 		).dataset.editingId = task.id;
 	}
 
-	private async renderTasks(tasks?: Task[]): Promise<void> {
+	protected async renderTasks(tasks?: Task[]): Promise<void> {
 		const taskListElement = document.getElementById(
 			"taskList"
 		) as HTMLUListElement;
@@ -209,7 +209,7 @@ export class TaskCalendar {
 		});
 	}
 
-	private async delToDoList(id: string): Promise<boolean> {
+	protected async delToDoList(id: string): Promise<boolean> {
 		const reference = ref(db, `todos/${id}`);
 
 		try {
@@ -224,7 +224,7 @@ export class TaskCalendar {
 		}
 	}
 
-	private async deleteTask(
+	protected async deleteTask(
 		taskId: string,
 		deleteButton: HTMLButtonElement
 	): Promise<void> {
@@ -242,7 +242,7 @@ export class TaskCalendar {
 	}
 
 	// eslint-disable-next-line class-methods-use-this
-	private async clearForm(): Promise<void> {
+	protected async clearForm(): Promise<void> {
 		(document.getElementById("taskText") as HTMLTextAreaElement).value = "";
 		(document.getElementById("taskDate") as HTMLInputElement).value = "";
 		(document.getElementById("taskStatus") as HTMLSelectElement).value = "";
@@ -253,7 +253,7 @@ export class TaskCalendar {
 	}
 
 	// eslint-disable-next-line class-methods-use-this
-	private async writeToDoList(
+	protected async writeToDoList(
 		id: string,
 		text: string,
 		date: string,
@@ -369,7 +369,7 @@ export class TaskCalendar {
 	}
 
 	// eslint-disable-next-line class-methods-use-this
-	private taskMatchesFilter(task: Task, filter: TaskFilter): boolean {
+	protected taskMatchesFilter(task: Task, filter: TaskFilter): boolean {
 		const textToCompare = filter.text?.trim().toLowerCase() ?? "";
 		const tagsToCompare =
       filter.tags?.map((tag) => tag.trim().toLowerCase()) ?? [];
@@ -388,7 +388,7 @@ export class TaskCalendar {
 	}
 
 	// eslint-disable-next-line class-methods-use-this
-	private generateId(): string {
+	protected generateId(): string {
 		return Date.now().toString(36) + Math.random().toString(36).substring(2);
 	}
 }
