@@ -32,7 +32,8 @@ export interface TaskFilter {
 
 export class TaskCalendar {
     private namespace: string;
-
+    private deletedFromFirebase: Set<string> = new Set();
+    private deletedFromLocal: Set<string> = new Set();
     constructor(namespace: string) {
         this.namespace = namespace;
         document.addEventListener('DOMContentLoaded', this.init.bind(this));
@@ -48,6 +49,11 @@ export class TaskCalendar {
         document.getElementById('loadFromFirebaseButton')?.addEventListener('click', async () => {
             const tasksFromFirebase = await this.getToDoList();
             this.renderTasks(tasksFromFirebase);
+        });
+
+        document.getElementById('loadFromLocalButton')?.addEventListener('click', async () => {
+            const tasksFromLocal = await this.getTasks();
+            this.renderTasks(tasksFromLocal);
         });
         await this.renderTasks();
     }
@@ -108,12 +114,7 @@ export class TaskCalendar {
     private async renderTasks(tasks?: Task[]): Promise<void> {
         const taskListElement = document.getElementById('taskList') as HTMLUListElement;
         taskListElement.innerHTML = '';
-        // if (!tasks) {
-        //     tasks = await this.getTasks();
-        // }
-        // if (tasks.length === 0) {
-        //     tasks = await this.getToDoList();
-        // }
+
         const tasksToRender = tasks || await this.getTasks();
 
         tasksToRender.forEach((task) => {
@@ -125,9 +126,27 @@ export class TaskCalendar {
             editButton.addEventListener('click', () => this.editTask(task.id));
 
             const deleteButton = document.createElement('button');
-            deleteButton.textContent = 'Delete';
+            deleteButton.textContent = this.deletedFromLocal.has(task.id)
+                ? 'Deleted from Local' : 'Delete from Local';
             deleteButton.classList.add('delete-btn');
-            deleteButton.addEventListener('click', () => this.deleteTask(task.id));
+            deleteButton.disabled = this.deletedFromLocal.has(task.id);
+            deleteButton.addEventListener('click', async () => {
+                await this.deleteTask(task.id);
+                deleteButton.textContent = 'Deleted from local';
+                deleteButton.disabled = true;
+            }
+            );
+
+            const deleteButtonFirebase = document.createElement('button');
+            deleteButtonFirebase.textContent = this.deletedFromFirebase.has(task.id)
+                ? 'Deleted from Firebase' : 'Delete from Firebase';
+            deleteButtonFirebase.classList.add('delete-btn-firebase');
+            deleteButtonFirebase.disabled = this.deletedFromFirebase.has(task.id);
+            deleteButtonFirebase.addEventListener('click', async () => {
+                await this.delToDoList(task.id);
+                deleteButtonFirebase.textContent = 'Deleted from Firebase';
+                deleteButtonFirebase.disabled = true;
+            });
 
             const dateElement = document.createElement('span');
             dateElement.textContent = `Date: ${task.date}`;
@@ -141,6 +160,7 @@ export class TaskCalendar {
             taskElement.appendChild(statusElement);
             taskElement.appendChild(tagsElement);
             taskElement.appendChild(editButton);
+            taskElement.appendChild(deleteButtonFirebase);
 
             taskElement.appendChild(deleteButton);
             taskListElement.appendChild(taskElement);
@@ -150,14 +170,18 @@ export class TaskCalendar {
     private async delToDoList(id: string): Promise<void> {
         const reference = ref(db, 'todos/' + id);
 
-        await remove(reference);
+        try {
+            await remove(reference);
+            this.deletedFromFirebase.add(id);
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     private async deleteTask(taskId: string): Promise<void> {
         const tasks = await this.getTasks().then(tasks => tasks.filter(task => task.id !== taskId));
         await this.setTasks(tasks);
         await this.renderTasks(tasks);
-        await this.delToDoList(taskId);
     }
 
     private async clearForm(): Promise<void> {
@@ -215,6 +239,15 @@ export class TaskCalendar {
         await this.clearForm();
     }
 
+    private async getCurrentTasks(): Promise<Task[]> {
+        const localTasks = await this.getTasks();
+        if (localTasks.length > 0) {
+            return localTasks;
+        } else {
+            return await this.getToDoList();
+        }
+    }
+
     public async applyFilters(): Promise<void> {
         const filterTextElement = document.getElementById('filterText') as HTMLInputElement;
         const filterDateElement = document.getElementById('filterDate') as HTMLInputElement;
@@ -230,7 +263,7 @@ export class TaskCalendar {
                 .map(tag => tag.trim()) : undefined,
         };
 
-        const tasks = await this.getTasks();
+        const tasks = await this.getCurrentTasks();
         const filteredTasks = tasks.filter(task => this.taskMatchesFilter(task, filter));
         await this.renderTasks(filteredTasks);
     }

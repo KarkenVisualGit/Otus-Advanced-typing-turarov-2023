@@ -114,7 +114,8 @@ button:hover {
   border-color: #204d74;
 }
 
-.delete-btn {
+.delete-btn,
+.delete-btn-firebase {
   padding: 5px 10px;
   margin-left: 10px;
   background: #d9534f;
@@ -124,8 +125,17 @@ button:hover {
   border: none;
 }
 
-.delete-btn:hover {
+.delete-btn:hover,
+.delete-btn-firebase:hover {
   background: #c9302c;
+}
+
+.delete-btn-firebase:disabled,
+.delete-btn:disabled {
+  color: #757575;
+  background-color: #e0e0e0;
+  border: 1px solid #bdbdbd;
+  cursor: not-allowed;
 }
 
 .task-item-flex {
