@@ -95,8 +95,15 @@ export class TaskCalendar {
         localStorage.setItem(this.namespace, JSON.stringify(tasks));
     }
 
+    private async getAllTasks(): Promise<Task[]> {
+        const localTasks = await this.getTasks();
+        const firebaseTasks = await this.getToDoList();
+        return [...localTasks, ...firebaseTasks];
+    }
+
     private async editTask(taskId: string): Promise<void> {
-        const task = await this.getTasks().then(tasks => tasks.find(task => task.id === taskId));
+        const tasks = await this.getAllTasks();
+        const task = tasks.find(task => task.id === taskId);
         if (!task) {
             return;
         }
