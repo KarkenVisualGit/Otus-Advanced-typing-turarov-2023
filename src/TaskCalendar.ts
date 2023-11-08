@@ -33,6 +33,7 @@ export interface TaskFilter {
 export class TaskCalendar {
     private namespace: string;
     private deletedFromFirebase: Set<string> = new Set();
+    private idsFromFirebase: Set<string> = new Set();
     constructor(namespace: string) {
         this.namespace = namespace;
         document.addEventListener('DOMContentLoaded', this.init.bind(this));
@@ -72,7 +73,9 @@ export class TaskCalendar {
             const snapshot = await get(reference);
             if (snapshot.exists()) {
                 const tasksData = snapshot.val();
+                this.idsFromFirebase.clear();
                 return Object.keys(tasksData).map(key => {
+                    this.idsFromFirebase.add(key);
                     return {
                         id: key,
                         text: tasksData[key].text,
@@ -124,7 +127,7 @@ export class TaskCalendar {
         const tasksToRender = tasks || await this.getTasks();
         const localTasks = await this.getTasks();
 
-        tasksToRender.forEach((task) => {
+        tasksToRender.forEach(async (task) => {
             const taskElement = document.createElement('li');
             taskElement.classList.add('task-item-flex');
             const editButton = document.createElement('button');
@@ -143,7 +146,8 @@ export class TaskCalendar {
             deleteButtonFirebase.textContent = this.deletedFromFirebase.has(task.id)
                 ? 'Deleted from Firebase' : 'Delete from Firebase';
             deleteButtonFirebase.classList.add('delete-btn-firebase');
-            deleteButtonFirebase.disabled = this.deletedFromFirebase.has(task.id);
+            deleteButtonFirebase.disabled = this.deletedFromFirebase.has(task.id)
+                || !this.idsFromFirebase.has(task.id);
             deleteButtonFirebase.addEventListener('click', async () => {
                 const success = await this.delToDoList(task.id);
                 if (success) {
