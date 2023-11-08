@@ -33,7 +33,6 @@ export interface TaskFilter {
 export class TaskCalendar {
     private namespace: string;
     private deletedFromFirebase: Set<string> = new Set();
-    private deletedFromLocal: Set<string> = new Set();
     constructor(namespace: string) {
         this.namespace = namespace;
         document.addEventListener('DOMContentLoaded', this.init.bind(this));
@@ -116,6 +115,7 @@ export class TaskCalendar {
         taskListElement.innerHTML = '';
 
         const tasksToRender = tasks || await this.getTasks();
+        const localTasks = await this.getTasks();
 
         tasksToRender.forEach((task) => {
             const taskElement = document.createElement('li');
@@ -126,16 +126,11 @@ export class TaskCalendar {
             editButton.addEventListener('click', () => this.editTask(task.id));
 
             const deleteButton = document.createElement('button');
-            deleteButton.textContent = this.deletedFromLocal.has(task.id)
-                ? 'Deleted from Local' : 'Delete from Local';
+            deleteButton.textContent = localTasks.some(localTask => localTask.id === task.id)
+                ? 'Delete local' : 'Deleted locally';
             deleteButton.classList.add('delete-btn');
-            deleteButton.disabled = this.deletedFromLocal.has(task.id);
-            deleteButton.addEventListener('click', async () => {
-                await this.deleteTask(task.id);
-                deleteButton.textContent = 'Deleted from local';
-                deleteButton.disabled = true;
-            }
-            );
+            deleteButton.disabled = !localTasks.some(localTask => localTask.id === task.id);
+            deleteButton.addEventListener('click', async () => await this.deleteTask(task.id, deleteButton));
 
             const deleteButtonFirebase = document.createElement('button');
             deleteButtonFirebase.textContent = this.deletedFromFirebase.has(task.id)
@@ -143,9 +138,12 @@ export class TaskCalendar {
             deleteButtonFirebase.classList.add('delete-btn-firebase');
             deleteButtonFirebase.disabled = this.deletedFromFirebase.has(task.id);
             deleteButtonFirebase.addEventListener('click', async () => {
-                await this.delToDoList(task.id);
-                deleteButtonFirebase.textContent = 'Deleted from Firebase';
-                deleteButtonFirebase.disabled = true;
+                const success = await this.delToDoList(task.id);
+                if (success) {
+                    deleteButtonFirebase.textContent = 'Deleted from Firebase';
+                    deleteButtonFirebase.disabled = true;
+                    this.deletedFromFirebase.add(task.id);
+                }
             });
 
             const dateElement = document.createElement('span');
@@ -167,21 +165,25 @@ export class TaskCalendar {
         });
     }
 
-    private async delToDoList(id: string): Promise<void> {
+    private async delToDoList(id: string): Promise<boolean> {
         const reference = ref(db, 'todos/' + id);
 
         try {
             await remove(reference);
             this.deletedFromFirebase.add(id);
+            return true;
         } catch (error) {
             console.error(error);
+            return false;
         }
     }
 
-    private async deleteTask(taskId: string): Promise<void> {
+    private async deleteTask(taskId: string, deleteButton: HTMLButtonElement): Promise<void> {
         const tasks = await this.getTasks().then(tasks => tasks.filter(task => task.id !== taskId));
         await this.setTasks(tasks);
         await this.renderTasks(tasks);
+        deleteButton.textContent = 'Deleted locally';
+        deleteButton.disabled = true;
     }
 
     private async clearForm(): Promise<void> {
@@ -232,10 +234,10 @@ export class TaskCalendar {
         }
 
         await this.setTasks(tasks);
-        await this.renderTasks();
+        // await this.renderTasks();
 
         await this.writeToDoList(newTask.id, newTask.text, newTask.date, newTask.status, newTask.tags);
-
+        this.deletedFromFirebase.delete(newTask.id);
         await this.clearForm();
     }
 
