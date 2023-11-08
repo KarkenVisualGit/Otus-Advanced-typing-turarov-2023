@@ -216,6 +216,9 @@ export class TaskCalendar {
 
 
     public async addOrUpdateTask(): Promise<void> {
+
+        const saveOptionElement = document.getElementById('saveOption') as HTMLSelectElement;
+        const saveOption = saveOptionElement.value;
         const taskTextElement = document.getElementById('taskText') as HTMLTextAreaElement;
         const taskDateElement = document.getElementById('taskDate') as HTMLInputElement;
         const taskStatusElement = document.getElementById('taskStatus') as HTMLSelectElement;
@@ -232,20 +235,22 @@ export class TaskCalendar {
         };
 
 
-        const tasks = await this.getTasks();
-        const taskIndex = tasks.findIndex(task => task.id === newTask.id);
-        if (taskIndex > -1) {
-            tasks[taskIndex] = newTask;
-        } else {
-            tasks.push(newTask);
+        if (saveOption === 'local') {
+            const tasks = await this.getTasks();
+            const taskIndex = tasks.findIndex(task => task.id === newTask.id);
+            if (taskIndex > -1) {
+                tasks[taskIndex] = newTask;
+            } else {
+                tasks.push(newTask);
+            }
+            await this.setTasks(tasks);
+        } else if (saveOption === 'firebase') {
+            await this.writeToDoList(newTask.id, newTask.text, newTask.date, newTask.status, newTask.tags);
         }
-
-        await this.setTasks(tasks);
-        // await this.renderTasks();
-
-        await this.writeToDoList(newTask.id, newTask.text, newTask.date, newTask.status, newTask.tags);
         this.deletedFromFirebase.delete(newTask.id);
         await this.clearForm();
+
+        await this.renderTasks();
     }
 
     private async getCurrentTasks(): Promise<Task[]> {
