@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { Database, getDatabase, ref, set, get, update, remove } from "firebase/database";
+import { Database, getDatabase, ref, set, get, remove } from "firebase/database";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCZsRRy7BwXZOnYz-3BIo-o4WuHl5XKkCE",
@@ -267,6 +267,9 @@ export class TaskCalendar {
     }
 
     public async applyFilters(): Promise<void> {
+        const filterSourceElement = document.getElementById('filterSource') as HTMLSelectElement;
+        const filterSource = filterSourceElement.value;
+
         const filterTextElement = document.getElementById('filterText') as HTMLInputElement;
         const filterDateElement = document.getElementById('filterDate') as HTMLInputElement;
         const filterStatusElement = document.getElementById('filterStatus') as HTMLSelectElement;
@@ -281,7 +284,14 @@ export class TaskCalendar {
                 .map(tag => tag.trim()) : undefined,
         };
 
-        const tasks = await this.getCurrentTasks();
+        let tasks: Task[] = [];
+        if (filterSource === 'all') {
+            tasks = await this.getAllTasks();
+        } else if (filterSource === 'local') {
+            tasks = await this.getTasks();
+        } else if (filterSource === 'firebase') {
+            tasks = await this.getToDoList();
+        }
         const filteredTasks = tasks.filter(task => this.taskMatchesFilter(task, filter));
         await this.renderTasks(filteredTasks);
     }
