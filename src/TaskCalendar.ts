@@ -45,6 +45,10 @@ export class TaskCalendar {
         document.getElementById('applyFiltersButton')?.addEventListener('click', async () => {
             await this.applyFilters();
         });
+        document.getElementById('loadFromFirebaseButton')?.addEventListener('click', async () => {
+            const tasksFromFirebase = await this.getToDoList();
+            this.renderTasks(tasksFromFirebase);
+        });
         await this.renderTasks();
     }
 
@@ -54,6 +58,32 @@ export class TaskCalendar {
             return JSON.parse(tasksJSON);
         }
         return [];
+    }
+
+    private async getToDoList(): Promise<Task[]> {
+        const reference = ref(db, 'todos/');
+
+        try {
+            const snapshot = await get(reference);
+            if (snapshot.exists()) {
+                const tasksData = snapshot.val();
+                return Object.keys(tasksData).map(key => {
+                    return {
+                        id: key,
+                        text: tasksData[key].text,
+                        date: tasksData[key].date,
+                        status: tasksData[key].status,
+                        tags: tasksData[key].tags.split(', ')
+                    };
+                });
+            } else {
+                console.log("No data available");
+                return [];
+            }
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
     }
 
     private async setTasks(tasks: Task[]): Promise<void> {
@@ -78,6 +108,12 @@ export class TaskCalendar {
     private async renderTasks(tasks?: Task[]): Promise<void> {
         const taskListElement = document.getElementById('taskList') as HTMLUListElement;
         taskListElement.innerHTML = '';
+        // if (!tasks) {
+        //     tasks = await this.getTasks();
+        // }
+        // if (tasks.length === 0) {
+        //     tasks = await this.getToDoList();
+        // }
         const tasksToRender = tasks || await this.getTasks();
 
         tasksToRender.forEach((task) => {

@@ -102,12 +102,14 @@ button:hover {
   background: #ec971f;
 }
 
-#addOrUpdateTaskButton {
+#addOrUpdateTaskButton,
+#loadFromFirebaseButton {
   background: #337ab7;
   border-color: #2e6da4;
 }
 
-#addOrUpdateTaskButton:hover {
+#addOrUpdateTaskButton:hover,
+#loadFromFirebaseButton:hover {
   background: #286090;
   border-color: #204d74;
 }
