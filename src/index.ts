@@ -1,4 +1,4 @@
 import "./style/style.css";
-import {TaskCalendar} from "../src/TaskCalendar";
+import { TaskCalendar } from "../src/TaskCalendar";
 
-const taskCalendarApi = new TaskCalendar('myNamespace');
+const taskCalendarApi = new TaskCalendar("myNamespace");
