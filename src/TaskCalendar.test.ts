@@ -1,5 +1,5 @@
-import { TaskCalendar, Task, TaskFilter } from './TaskCalendar';
-import { get, ref } from 'firebase/database';
+import { TaskCalendar, Task } from './TaskCalendar';
+import { get } from 'firebase/database';
 
 jest.mock('firebase/app', () => ({
     initializeApp: jest.fn(),
