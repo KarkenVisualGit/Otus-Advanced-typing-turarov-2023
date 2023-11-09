@@ -18,7 +18,7 @@ class TestableTaskCalendar extends TaskCalendar {
     }
 }
 
-describe('TaskCalendar', () => {
+describe('TaskCalendar testing', () => {
     let taskCalendar: TaskCalendar;
 
     beforeEach(() => {
@@ -83,10 +83,11 @@ describe('TaskCalendar', () => {
         });
     });
 
-    describe('TaskCalendar', () => {
+    describe('TaskCalendar get tests', () => {
         let taskCalendar: TaskCalendar;
 
         beforeEach(() => {
+            (get as jest.Mock).mockReset();
             (get as jest.Mock).mockImplementation(() => {
                 return {
                     exists: () => true,
@@ -108,6 +109,10 @@ describe('TaskCalendar', () => {
             });
 
             taskCalendar = new TaskCalendar('testNamespace');
+        });
+
+        afterEach(() => {
+            localStorage.clear(); 
         });
 
         it('getToDoList should correctly process tasks from Firebase', async () => {
@@ -134,4 +139,35 @@ describe('TaskCalendar', () => {
     });
 
 
+    describe('TaskCalendar set methods', () => {
+        let taskCalendar: TaskCalendar;
+
+        beforeEach(() => {
+            taskCalendar = new TaskCalendar('testNamespace');
+            Storage.prototype.setItem = jest.fn();
+            Storage.prototype.clear = jest.fn(); 
+        });
+
+        afterEach(() => {
+            (get as jest.Mock).mockReset();
+            localStorage.clear(); 
+        });
+
+        it('setTasks should save tasks to localStorage', async () => {
+            const tasks: Task[] = [{
+                id: '1',
+                text: 'Task 1',
+                date: '2021-01-01',
+                status: 'new',
+                tags: []
+            }];
+            await taskCalendar['setTasks'](tasks);
+
+            expect(localStorage.setItem).toHaveBeenCalledWith('testNamespace', JSON.stringify(tasks));
+        });
+
+    })
 });
+
+
+
