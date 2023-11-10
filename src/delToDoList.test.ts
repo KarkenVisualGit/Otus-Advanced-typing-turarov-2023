@@ -1,63 +1,66 @@
-import { TaskCalendar, Task } from './TaskCalendar';
-import { get, remove } from 'firebase/database';
+import { TaskCalendar, Task } from "./TaskCalendar";
 
-jest.mock('firebase/app', () => ({
-    initializeApp: jest.fn(),
+jest.mock("firebase/app", () => ({
+	initializeApp: jest.fn(),
 }));
 
-jest.mock('firebase/database', () => ({
-    getDatabase: jest.fn(),
-    ref: jest.fn(),
-    set: jest.fn(),
-    get: jest.fn(),
-    remove: jest.fn(),
+jest.mock("firebase/database", () => ({
+	getDatabase: jest.fn(),
+	ref: jest.fn(),
+	set: jest.fn(),
+	get: jest.fn(),
+	remove: jest.fn(),
 }));
 
-jest.mock('firebase/database', () => ({
-    getDatabase: jest.fn(),
-    ref: jest.fn(),
-    set: jest.fn(),
-    get: jest.fn().mockImplementation(() => Promise.resolve({
-        exists: () => false,
-        val: () => ({}),
-    })),
-    remove: jest.fn(),
+jest.mock("firebase/database", () => ({
+	getDatabase: jest.fn(),
+	ref: jest.fn(),
+	set: jest.fn(),
+	get: jest.fn().mockImplementation(() =>
+		Promise.resolve({
+			exists: () => false,
+			val: () => ({}),
+		})
+	),
+	remove: jest.fn(),
 }));
 
 class TestableTaskCalendar extends TaskCalendar {
-    public deletedFromFirebase: Set<string> = new Set();
-    public async testEditTask(taskId: string): Promise<void> {
-        return this.editTask(taskId);
-    }
-    public getAllTasksWrapper(): Promise<Task[]> {
-        return this.getAllTasks();
-    }
+	public deletedFromFirebase: Set<string> = new Set();
 
-    public initWrapper(): Promise<void> {
-        return this.init();
-    }
+	public async testEditTask(taskId: string): Promise<void> {
+		return this.editTask(taskId);
+	}
 
-    public getToDoListWrapper(): Promise<Task[]> {
-        return this.getToDoList();
-    }
+	public getAllTasksWrapper(): Promise<Task[]> {
+		return this.getAllTasks();
+	}
 
-    public delToDoListWrapper(id: string): Promise<boolean> {
-        return this.delToDoList(id);
-    }
+	public initWrapper(): Promise<void> {
+		return this.init();
+	}
 
-    public testgetTasks(): Promise<Task[]> {
-        return this.getTasks();
-    }
+	public getToDoListWrapper(): Promise<Task[]> {
+		return this.getToDoList();
+	}
 
-    public async renderMyTasks(tasks?: Task[]): Promise<void> {
-        await this.renderTasks(tasks);
-    }
+	public delToDoListWrapper(id: string): Promise<boolean> {
+		return this.delToDoList(id);
+	}
+
+	public testgetTasks(): Promise<Task[]> {
+		return this.getTasks();
+	}
+
+	public async renderMyTasks(tasks?: Task[]): Promise<void> {
+		await this.renderTasks(tasks);
+	}
 }
 
-describe('TaskCalendar', () => {
-    let taskCalendar: TestableTaskCalendar;
-    beforeEach(() => {
-        document.body.innerHTML = `
+describe("TaskCalendar", () => {
+	let taskCalendar: TestableTaskCalendar;
+	beforeEach(() => {
+		document.body.innerHTML = `
             <textarea id="taskText"></textarea>
             <input id="taskDate" />
             <select id="taskStatus">
@@ -69,16 +72,15 @@ describe('TaskCalendar', () => {
             <button id="addOrUpdateTaskButton"></button>
 			<ul class="task-list" id="taskList"></ul>
         `;
-    });
+	});
 
-    it('should delete a task from Firebase and update the deletedFromFirebase set', async () => {
-        taskCalendar = new TestableTaskCalendar('testNamespace');
-        const id = '1';
+	it("should delete a task from Firebase and update the deletedFromFirebase set", async () => {
+		taskCalendar = new TestableTaskCalendar("testNamespace");
+		const id = "1";
 
-        const success = await taskCalendar.delToDoListWrapper(id);
+		const success = await taskCalendar.delToDoListWrapper(id);
 
-        expect(success).toBe(true);
-        expect(taskCalendar.deletedFromFirebase.has(id)).toBe(true);
-    });
-
+		expect(success).toBe(true);
+		expect(taskCalendar.deletedFromFirebase.has(id)).toBe(true);
+	});
 });

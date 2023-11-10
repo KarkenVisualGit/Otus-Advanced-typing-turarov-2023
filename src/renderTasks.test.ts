@@ -1,57 +1,61 @@
-import { TaskCalendar, Task } from './TaskCalendar';
+import { TaskCalendar, Task } from "./TaskCalendar";
 
-jest.mock('firebase/app', () => ({
-    initializeApp: jest.fn(),
+jest.mock("firebase/app", () => ({
+	initializeApp: jest.fn(),
 }));
 
-jest.mock('firebase/database', () => ({
-    getDatabase: jest.fn(),
-    ref: jest.fn(),
-    set: jest.fn(),
-    get: jest.fn(),
-    remove: jest.fn(),
+jest.mock("firebase/database", () => ({
+	getDatabase: jest.fn(),
+	ref: jest.fn(),
+	set: jest.fn(),
+	get: jest.fn(),
+	remove: jest.fn(),
 }));
-jest.mock('firebase/database', () => ({
-    getDatabase: jest.fn(),
-    ref: jest.fn(),
-    set: jest.fn(),
-    get: jest.fn().mockImplementation(() => Promise.resolve({
-        exists: () => false,
-        val: () => ({}),
-    })),
-    remove: jest.fn(),
+jest.mock("firebase/database", () => ({
+	getDatabase: jest.fn(),
+	ref: jest.fn(),
+	set: jest.fn(),
+	get: jest.fn().mockImplementation(() =>
+		Promise.resolve({
+			exists: () => false,
+			val: () => ({}),
+		})
+	),
+	remove: jest.fn(),
 }));
 
 class TestableTaskCalendar extends TaskCalendar {
-    public deletedFromFirebase: Set<string> = new Set();
-    public async testEditTask(taskId: string): Promise<void> {
-        return this.editTask(taskId);
-    }
-    public getAllTasksWrapper(): Promise<Task[]> {
-        return this.getAllTasks();
-    }
+	public deletedFromFirebase: Set<string> = new Set();
 
-    public getToDoListWrapper(): Promise<Task[]> {
-        return this.getToDoList();
-    }
+	public async testEditTask(taskId: string): Promise<void> {
+		return this.editTask(taskId);
+	}
 
-    public delToDoListWrapper(id: string): Promise<boolean> {
-        return this.delToDoList(id);
-    }
+	public getAllTasksWrapper(): Promise<Task[]> {
+		return this.getAllTasks();
+	}
 
-    public testgetTasks(): Promise<Task[]> {
-        return this.getTasks();
-    }
+	public getToDoListWrapper(): Promise<Task[]> {
+		return this.getToDoList();
+	}
 
-    public async renderMyTasks(tasks?: Task[]): Promise<void> {
-        await this.renderTasks(tasks);
-    }
+	public delToDoListWrapper(id: string): Promise<boolean> {
+		return this.delToDoList(id);
+	}
+
+	public testgetTasks(): Promise<Task[]> {
+		return this.getTasks();
+	}
+
+	public async renderMyTasks(tasks?: Task[]): Promise<void> {
+		await this.renderTasks(tasks);
+	}
 }
 
-describe('TaskCalendar', () => {
-    let taskCalendar: TestableTaskCalendar;
-    beforeEach(() => {
-        document.body.innerHTML = `
+describe("TaskCalendar", () => {
+	let taskCalendar: TestableTaskCalendar;
+	beforeEach(() => {
+		document.body.innerHTML = `
             <textarea id="taskText"></textarea>
             <input id="taskDate" />
             <select id="taskStatus">
@@ -63,77 +67,92 @@ describe('TaskCalendar', () => {
             <button id="addOrUpdateTaskButton"></button>
 			<ul class="task-list" id="taskList"></ul>
         `;
-    });
+	});
 
-    it('should render tasks correctly when tasks are provided', async () => {
-        taskCalendar = new TestableTaskCalendar('testNamespace');
-        const tasks: Task[] = [
-            {
-                id: '1',
-                text: 'Task 1',
-                date: '2023-11-08',
-                status: 'in progress',
-                tags: ['Shopping', 'Urgent'],
-            },
-            {
-                id: '2',
-                text: 'Task 2',
-                date: '2023-11-09',
-                status: 'in progress',
-                tags: ['Work', 'Important'],
-            },
-        ];
+	it("should render tasks correctly when tasks are provided", async () => {
+		taskCalendar = new TestableTaskCalendar("testNamespace");
+		const tasks: Task[] = [
+			{
+				id: "1",
+				text: "Task 1",
+				date: "2023-11-08",
+				status: "in progress",
+				tags: ["Shopping", "Urgent"],
+			},
+			{
+				id: "2",
+				text: "Task 2",
+				date: "2023-11-09",
+				status: "in progress",
+				tags: ["Work", "Important"],
+			},
+		];
 
+		await taskCalendar.renderMyTasks(tasks);
 
-        await taskCalendar.renderMyTasks(tasks);
+		const taskListElement = document.getElementById(
+			"taskList"
+		) as HTMLUListElement;
+		expect(taskListElement.childElementCount).toBe(2);
 
-        const taskListElement = document.getElementById('taskList') as HTMLUListElement;
-        expect(taskListElement.childElementCount).toBe(2);
+		const taskElements = Array.from(taskListElement.children);
+		expect(taskElements).toHaveLength(2);
 
-        const taskElements = Array.from(taskListElement.children);
-        expect(taskElements.length).toBe(2);
+		const firstTaskElement = taskElements[0];
+		expect(firstTaskElement.textContent).toContain("Task 1");
+		expect(
+      firstTaskElement.querySelector("span:nth-child(1)")!.textContent
+		).toBe("Date: 2023-11-08");
+		expect(
+      firstTaskElement.querySelector("span:nth-child(2)")!.textContent
+		).toBe("Status: in progress");
+		expect(
+      firstTaskElement.querySelector("span:nth-child(3)")!.textContent
+		).toBe("Tags: Shopping, Urgent");
+		const secondTaskElement = taskElements[1];
+		expect(secondTaskElement.textContent).toContain("Task 2");
+		expect(
+      secondTaskElement.querySelector("span:nth-child(1)")!.textContent
+		).toBe("Date: 2023-11-09");
+		expect(
+      secondTaskElement.querySelector("span:nth-child(2)")!.textContent
+		).toBe("Status: in progress");
+		expect(
+      secondTaskElement.querySelector("span:nth-child(3)")!.textContent
+		).toBe("Tags: Work, Important");
+	});
 
-        const firstTaskElement = taskElements[0];
-        expect(firstTaskElement.textContent).toContain('Task 1');
-        expect(firstTaskElement.querySelector('span:nth-child(1)')!.textContent).toBe('Date: 2023-11-08');
-        expect(firstTaskElement.querySelector('span:nth-child(2)')!.textContent).toBe('Status: in progress');
-        expect(firstTaskElement.querySelector('span:nth-child(3)')!.textContent).toBe('Tags: Shopping, Urgent');
-        const secondTaskElement = taskElements[1];
-        expect(secondTaskElement.textContent).toContain('Task 2');
-        expect(secondTaskElement.querySelector('span:nth-child(1)')!.textContent).toBe('Date: 2023-11-09');
-        expect(secondTaskElement.querySelector('span:nth-child(2)')!.textContent).toBe('Status: in progress');
-        expect(secondTaskElement.querySelector('span:nth-child(3)')!.textContent).toBe('Tags: Work, Important');
-    });
+	it("should not render tasks from getTodoList when tasks are not provided", async () => {
+		taskCalendar = new TestableTaskCalendar("testNamespace");
 
-    it('should not render tasks from getTodoList when tasks are not provided', async () => {
+		jest.spyOn(taskCalendar, "getToDoListWrapper").mockResolvedValue([]);
 
-        taskCalendar = new TestableTaskCalendar('testNamespace');
+		await taskCalendar.renderMyTasks();
 
-        jest.spyOn(taskCalendar, 'getToDoListWrapper').mockResolvedValue([]);
+		expect(taskCalendar.getToDoListWrapper).not.toHaveBeenCalled();
+		const taskListElement = document.getElementById(
+			"taskList"
+		) as HTMLUListElement;
+		expect(taskListElement.childElementCount).toBe(0);
+	});
 
-        await taskCalendar.renderMyTasks();
+	it("should render empty tasks correctly", async () => {
+		taskCalendar = new TestableTaskCalendar("testNamespace");
+		const tasks: Task[] = [
+			{
+				id: "1",
+				text: "",
+				date: "",
+				status: "new",
+				tags: [],
+			},
+		];
 
-        expect(taskCalendar.getToDoListWrapper).not.toHaveBeenCalled();
-        const taskListElement = document.getElementById('taskList') as HTMLUListElement;
-        expect(taskListElement.childElementCount).toBe(0);
-    });
+		await taskCalendar.renderMyTasks(tasks);
 
-    it('should render empty tasks correctly', async () => {
-        taskCalendar = new TestableTaskCalendar('testNamespace');
-        const tasks: Task[] = [
-            {
-                id: '1',
-                text: '',
-                date: '',
-                status: 'new',
-                tags: [],
-            },
-        ];
-
-        await taskCalendar.renderMyTasks(tasks);
-
-        const taskListElement = document.getElementById('taskList') as HTMLUListElement;
-        expect(taskListElement.childElementCount).toBe(1);
-    });
-
+		const taskListElement = document.getElementById(
+			"taskList"
+		) as HTMLUListElement;
+		expect(taskListElement.childElementCount).toBe(1);
+	});
 });
