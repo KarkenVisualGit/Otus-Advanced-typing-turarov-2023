@@ -48,6 +48,24 @@ describe('editTask Method', () => {
             tags: 'firebase, task'
         }
     };
+	
+	jest.mock('firebase/database', () => ({
+            getDatabase: jest.fn(),
+            ref: jest.fn(),
+            set: jest.fn(),
+            get: jest.fn().mockImplementation(() => Promise.resolve({
+                exists: () => true,
+                val: () => ({
+                    '2': {
+                        text: 'Firebase Task',
+                        date: '2023-01-02',
+                        status: 'in progress',
+                        tags: 'firebase, task'
+                    }
+                })
+            })),
+            remove: jest.fn(),
+        }));
 
 
     beforeEach(() => {
@@ -62,6 +80,7 @@ describe('editTask Method', () => {
             </select>
             <input id="taskTags" />
             <button id="addOrUpdateTaskButton"></button>
+			<ul class="task-list" id="taskList"></ul>
         `;
 
         taskCalendar = new TestableTaskCalendar('testNamespace');

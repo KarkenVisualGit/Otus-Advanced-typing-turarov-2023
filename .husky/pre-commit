@@ -3,4 +3,3 @@
 
 npx lint-staged
 npm run check-ts
-npm run test

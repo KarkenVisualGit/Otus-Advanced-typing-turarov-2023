@@ -11,6 +11,16 @@ jest.mock('firebase/database', () => ({
     get: jest.fn(),
     remove: jest.fn(),
 }));
+jest.mock('firebase/database', () => ({
+    getDatabase: jest.fn(),
+    ref: jest.fn(),
+    set: jest.fn(),
+    get: jest.fn().mockImplementation(() => Promise.resolve({
+        exists: () => false,
+        val: () => ({}),
+    })),
+    remove: jest.fn(),
+}));
 
 class TestableTaskCalendar extends TaskCalendar {
     public deletedFromFirebase: Set<string> = new Set();
@@ -98,7 +108,8 @@ describe('TaskCalendar', () => {
     it('should not render tasks from getTodoList when tasks are not provided', async () => {
 
         taskCalendar = new TestableTaskCalendar('testNamespace');
-        jest.spyOn(taskCalendar, 'getToDoListWrapper').mockResolvedValue(Promise.resolve([]));
+
+        jest.spyOn(taskCalendar, 'getToDoListWrapper').mockResolvedValue([]);
 
         await taskCalendar.renderMyTasks();
 

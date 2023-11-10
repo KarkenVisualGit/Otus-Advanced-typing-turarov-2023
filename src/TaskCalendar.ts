@@ -107,7 +107,9 @@ export class TaskCalendar {
 			console.log("No data available");
 			return [];
 		} catch (error) {
-			console.error(error);
+			if (error) {
+				console.error(error);
+			}
 			return [];
 		}
 	}
