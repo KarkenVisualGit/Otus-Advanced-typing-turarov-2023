@@ -233,6 +233,8 @@ export class TaskCalendar {
 		const tasks = await this.getTasks().then((innertasks) =>
 			innertasks.filter((task) => task.id !== taskId)
 		);
+		console.log(tasks);
+		console.log("deleteTask called with taskId:", taskId);
 		await this.setTasks(tasks);
 		// eslint-disable-next-line no-param-reassign
 		deleteButton.textContent = "Deleted locally";
@@ -240,6 +242,7 @@ export class TaskCalendar {
 		deleteButton.disabled = true;
 
 		const allTasks = await this.getAllTasks();
+
 		await this.renderTasks(allTasks);
 	}
 
@@ -293,8 +296,10 @@ export class TaskCalendar {
       document.getElementById("addOrUpdateTaskButton") as HTMLButtonElement
 		).dataset;
 
+		const taskId = editingId || this.generateId();
+
 		const newTask: Task = {
-			id: editingId || this.generateId(),
+			id: taskId,
 			text: taskTextElement.value,
 			date: taskDateElement.value,
 			status: taskStatusElement.value as "new" | "in progress" | "done",
@@ -303,7 +308,7 @@ export class TaskCalendar {
 
 		if (saveOption === "local") {
 			const tasks = await this.getTasks();
-			const taskIndex = tasks.findIndex((task) => task.id === newTask.id);
+			const taskIndex = tasks.findIndex((task) => task.id === taskId);
 			if (taskIndex > -1) {
 				tasks[taskIndex] = newTask;
 			} else {
@@ -318,7 +323,9 @@ export class TaskCalendar {
 				newTask.status,
 				newTask.tags
 			);
+			this.idsFromFirebase.add(newTask.id);
 		}
+
 		this.deletedFromFirebase.delete(newTask.id);
 		await this.clearForm();
 		const allTasks = await this.getAllTasks();
