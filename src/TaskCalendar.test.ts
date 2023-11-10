@@ -17,15 +17,15 @@ class TestableTaskCalendar extends TaskCalendar {
 		return this.getToDoList();
 	}
 
-    public testgetTasks(): Promise<Task[]> {
+	public testgetTasks(): Promise<Task[]> {
 		return this.getTasks();
 	}
 
-    public getToDoListWrapper(): Promise<Task[]> {
+	public getToDoListWrapper(): Promise<Task[]> {
 		return this.getToDoList();
 	}
 
-    public testsetTasks(tasks: Task[]): Promise<void> {
+	public testsetTasks(tasks: Task[]): Promise<void> {
 		return this.setTasks(tasks);
 	}
 }
@@ -86,8 +86,6 @@ describe("TaskCalendar testing", () => {
 
 			mockLocalStorage.setItem("testNamespace", JSON.stringify(sampleTasks));
 
-			const taskCalendar = new TestableTaskCalendar("testNamespace");
-
 			const tasks = await taskCalendar.testgetTasks();
 
 			expect(tasks).toEqual(sampleTasks);
@@ -95,7 +93,6 @@ describe("TaskCalendar testing", () => {
 		});
 
 		it("should return an empty array if no tasks in localStorage", async () => {
-			const taskCalendar = new TestableTaskCalendar("testNamespace");
 			const tasks = await taskCalendar.testgetTasks();
 
 			expect(tasks).toEqual([]);
@@ -104,8 +101,6 @@ describe("TaskCalendar testing", () => {
 	});
 
 	describe("TaskCalendar get tests", () => {
-		let taskCalendar: TestableTaskCalendar;
-
 		beforeEach(() => {
 			(get as jest.Mock).mockReset();
 			(get as jest.Mock).mockImplementation(() => ({
@@ -157,8 +152,6 @@ describe("TaskCalendar testing", () => {
 	});
 
 	describe("TaskCalendar set methods", () => {
-		let taskCalendar: TestableTaskCalendar;
-
 		beforeEach(() => {
 			taskCalendar = new TestableTaskCalendar("testNamespace");
 			Storage.prototype.setItem = jest.fn();

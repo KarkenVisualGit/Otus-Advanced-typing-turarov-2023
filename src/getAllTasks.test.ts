@@ -25,19 +25,17 @@ describe("getAllTasks Method", () => {
 	beforeEach(() => {
 		taskCalendar = new TestableTaskCalendar("testNamespace");
 
-		Storage.prototype.getItem = jest
-			.fn()
-			.mockImplementation(() =>
-				JSON.stringify([
-					{
-						id: "localStorageTaskId",
-						text: "Local Task",
-						date: "2023-01-03",
-						status: "done",
-						tags: ["local"],
-					},
-				])
-			);
+		Storage.prototype.getItem = jest.fn().mockImplementation(() =>
+			JSON.stringify([
+				{
+					id: "localStorageTaskId",
+					text: "Local Task",
+					date: "2023-01-03",
+					status: "done",
+					tags: ["local"],
+				},
+			])
+		);
 
 		(get as jest.Mock).mockImplementation(() =>
 			Promise.resolve({
