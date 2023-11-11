@@ -100,7 +100,9 @@ describe("deleteTask Method", () => {
 		const deleteButton = document.createElement("button");
 
 		await taskCalendar.testDeleteTask("1", deleteButton);
-		await taskCalendar.renderMyTasks(mockTasks.filter(task => task.id !== '1'));
+		await taskCalendar.renderMyTasks(
+			mockTasks.filter((task) => task.id !== "1")
+		);
 
 		expect(deleteButton.textContent).toBe("Deleted locally");
 		expect(deleteButton.disabled).toBeTruthy();
