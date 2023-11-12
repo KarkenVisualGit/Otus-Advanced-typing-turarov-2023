@@ -1,4 +1,4 @@
-import { TaskCalendar, Task } from './TaskCalendar';
+import { TaskCalendar, Task } from "./TaskCalendar";
 
 jest.mock("firebase/app", () => ({
 	initializeApp: jest.fn(),
@@ -18,21 +18,21 @@ jest.mock("firebase/database", () => ({
 }));
 
 const localStorageMock = (() => {
-    let store: { [key: string]: string } = {};
+	let store: { [key: string]: string } = {};
 
-    return {
-        getItem: jest.fn((key: string): string | null => store[key] || null),
-        setItem: jest.fn((key: string, value: string): void => {
-            store[key] = value;
-        }),
-        clear: jest.fn((): void => {
-            store = {};
-        }),
-    };
+	return {
+		getItem: jest.fn((key: string): string | null => store[key] || null),
+		setItem: jest.fn((key: string, value: string): void => {
+			store[key] = value;
+		}),
+		clear: jest.fn((): void => {
+			store = {};
+		}),
+	};
 })();
 
-Object.defineProperty(window, 'localStorage', {
-  value: localStorageMock
+Object.defineProperty(window, "localStorage", {
+	value: localStorageMock,
 });
 
 class TestableTaskCalendar extends TaskCalendar {
@@ -52,16 +52,16 @@ class TestableTaskCalendar extends TaskCalendar {
 		return this.setTasks(tasks);
 	}
 
-    public testapplyFilters(): Promise<void> {
-        return this.applyFilters();
-    }
+	public testapplyFilters(): Promise<void> {
+		return this.applyFilters();
+	}
 }
 
-describe('TaskCalendar', () => {
-    let taskCalendar: TestableTaskCalendar;
-    beforeEach(() => {
-        taskCalendar = new TestableTaskCalendar('testNamespace');
-        document.body.innerHTML = `
+describe("TaskCalendar", () => {
+	let taskCalendar: TestableTaskCalendar;
+	beforeEach(() => {
+		taskCalendar = new TestableTaskCalendar("testNamespace");
+		document.body.innerHTML = `
             <select id="filterSource">
                 <option value="all">All</option>
                 <option value="local">Local</option>
@@ -77,35 +77,50 @@ describe('TaskCalendar', () => {
             <input id="filterTags" />
             <ul id="taskList"></ul>
         `;
-    });
+	});
 
-    it('should apply filters and render filtered tasks', async () => {
+	it("should apply filters and render filtered tasks", async () => {
+		(document.getElementById("filterText") as HTMLInputElement).value = "Task";
+		(document.getElementById("filterDate") as HTMLInputElement).value =
+      "2023-01-01";
+		(document.getElementById("filterStatus") as HTMLSelectElement).value =
+      "new";
+		(document.getElementById("filterTags") as HTMLInputElement).value =
+      "urgent";
 
-        (document.getElementById('filterText') as HTMLInputElement).value = 'Task';
-        (document.getElementById('filterDate') as HTMLInputElement).value = '2023-01-01';
-        (document.getElementById('filterStatus') as HTMLSelectElement).value = 'new';
-        (document.getElementById('filterTags') as HTMLInputElement).value = 'urgent';
+		const mockTasks: Task[] = [
+			{
+				id: "1",
+				text: "Task 1",
+				date: "2023-01-01",
+				status: "new",
+				tags: ["urgent"],
+			},
+			{
+				id: "2",
+				text: "Task 2",
+				date: "2023-01-02",
+				status: "done",
+				tags: ["important"],
+			},
+		];
+		localStorageMock.setItem("testNamespace", JSON.stringify(mockTasks));
 
-        const mockTasks: Task[] = [
-            { id: '1', text: 'Task 1', date: '2023-01-01', status: 'new', tags: ['urgent'] },
-            { id: '2', text: 'Task 2', date: '2023-01-02', status: 'done', tags: ['important'] }
-        ];
-        localStorageMock.setItem('testNamespace', JSON.stringify(mockTasks));
-       
-        jest.spyOn(taskCalendar, 'testgetTasks').mockResolvedValue(mockTasks);
-        jest.spyOn(taskCalendar, 'getToDoListWrapper').mockResolvedValue(mockTasks);
+		jest.spyOn(taskCalendar, "testgetTasks").mockResolvedValue(mockTasks);
+		jest.spyOn(taskCalendar, "getToDoListWrapper").mockResolvedValue(mockTasks);
 
-   
-        await taskCalendar.applyFilters();
+		await taskCalendar.applyFilters();
 
-        const taskListElement = document.getElementById('taskList') as HTMLUListElement;;
-        expect(taskListElement.children.length).toBe(1); 
-        expect(taskListElement.textContent).toContain('Task 1'); 
-    });
+		const taskListElement = document.getElementById(
+			"taskList"
+		) as HTMLUListElement;
+		expect(taskListElement.children).toHaveLength(1);
+		expect(taskListElement.textContent).toContain("Task 1");
+	});
 
-    afterEach(() => {
-        localStorageMock.clear();
-        jest.restoreAllMocks();
-        document.body.innerHTML = '';
-    });
+	afterEach(() => {
+		localStorageMock.clear();
+		jest.restoreAllMocks();
+		document.body.innerHTML = "";
+	});
 });
