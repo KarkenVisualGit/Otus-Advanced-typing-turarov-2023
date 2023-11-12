@@ -1,4 +1,4 @@
-# [Codecov]![codecov](https://codecov.io/gh/KarkenVisualGit/Otus-Advanced-typing-turarov-2023/graph/badge.svg?token=izppGKtvSy)](https://codecov.io/gh/KarkenVisualGit/Otus-Advanced-typing-turarov-2023/tree/CRUD-API)
+# [![codecov](https://codecov.io/gh/KarkenVisualGit/Otus-Advanced-typing-turarov-2023/graph/badge.svg?token=izppGKtvSy)](https://codecov.io/gh/KarkenVisualGit/Otus-Advanced-typing-turarov-2023/tree/CRUD-API)
 
 ## (https://codecov.io/gh/KarkenVisualGit/Otus-Advanced-typing-turarov-2023/tree/CRUD-API) Report
 
