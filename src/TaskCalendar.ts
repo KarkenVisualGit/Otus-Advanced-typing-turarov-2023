@@ -331,8 +331,9 @@ export class TaskCalendar {
 		const allTasks = await this.getAllTasks();
 		await this.renderTasks(allTasks);
 	}
-
+	
 	public async applyFilters(): Promise<void> {
+		console.log('applyFilters called');
 		const filterSourceElement = document.getElementById(
 			"filterSource"
 		) as HTMLSelectElement;
@@ -362,6 +363,7 @@ export class TaskCalendar {
 				? filterTagsElement.value.split(",").map((tag) => tag.trim())
 				: undefined,
 		};
+		console.log('Filter:', filter);
 
 		let tasks: Task[] = [];
 		if (filterSource === "all") {
@@ -371,9 +373,11 @@ export class TaskCalendar {
 		} else if (filterSource === "firebase") {
 			tasks = await this.getToDoList();
 		}
+		console.log('Tasks before filtering:', tasks);
 		const filteredTasks = tasks.filter((task) =>
 			this.taskMatchesFilter(task, filter)
 		);
+		console.log('Filtered tasks:', filteredTasks);
 		await this.renderTasks(filteredTasks);
 	}
 
