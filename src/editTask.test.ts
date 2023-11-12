@@ -104,6 +104,11 @@ describe("editTask Method", () => {
 			.mockResolvedValue([mockTask]);
 	});
 
+	afterEach(() => {
+		jest.restoreAllMocks();
+		document.body.innerHTML = ``;
+	});
+
 	it("should fill the form with task data for editing", async () => {
 		await taskCalendar.testEditTask("1");
 
@@ -124,4 +129,21 @@ describe("editTask Method", () => {
 				.dataset.editingId
 		).toBe(mockTask.id);
 	});
+
+	it('editTask should return if task is not found', async () => {
+		(document.getElementById("taskText") as HTMLTextAreaElement).value = "Initial value";
+		(document.getElementById("taskDate") as HTMLInputElement).value = "2023-01-01";
+		(document.getElementById("taskStatus") as HTMLSelectElement).value = "new";
+		(document.getElementById("taskTags") as HTMLInputElement).value = "initial, tags";
+
+		jest.spyOn(taskCalendar, 'getAllTasksWrapper').mockResolvedValue([]);
+
+		await taskCalendar.testEditTask('nonexistentId');
+
+		expect((document.getElementById("taskText") as HTMLTextAreaElement).value).toBe("Initial value");
+		expect((document.getElementById("taskDate") as HTMLInputElement).value).toBe("2023-01-01");
+		expect((document.getElementById("taskStatus") as HTMLSelectElement).value).toBe("new");
+		expect((document.getElementById("taskTags") as HTMLInputElement).value).toBe("initial, tags");;
+	});
+
 });
