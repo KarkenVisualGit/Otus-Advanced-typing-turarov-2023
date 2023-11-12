@@ -8,13 +8,6 @@ jest.mock("firebase/database", () => ({
 	getDatabase: jest.fn(),
 	ref: jest.fn(),
 	set: jest.fn(),
-	get: jest.fn(),
-	remove: jest.fn(),
-}));
-jest.mock("firebase/database", () => ({
-	getDatabase: jest.fn(),
-	ref: jest.fn(),
-	set: jest.fn(),
 	get: jest.fn().mockImplementation(() =>
 		Promise.resolve({
 			exists: () => false,
@@ -69,6 +62,11 @@ describe("TaskCalendar", () => {
         `;
 	});
 
+	afterEach(() => {
+		jest.restoreAllMocks();
+		document.body.innerHTML = '';
+	});
+
 	it("should render tasks correctly when tasks are provided", async () => {
 		taskCalendar = new TestableTaskCalendar("testNamespace");
 		const tasks: Task[] = [
@@ -101,24 +99,24 @@ describe("TaskCalendar", () => {
 		const firstTaskElement = taskElements[0];
 		expect(firstTaskElement.textContent).toContain("Task 1");
 		expect(
-      firstTaskElement.querySelector("span:nth-child(1)")!.textContent
+			firstTaskElement.querySelector("span:nth-child(1)")!.textContent
 		).toBe("Date: 2023-11-08");
 		expect(
-      firstTaskElement.querySelector("span:nth-child(2)")!.textContent
+			firstTaskElement.querySelector("span:nth-child(2)")!.textContent
 		).toBe("Status: in progress");
 		expect(
-      firstTaskElement.querySelector("span:nth-child(3)")!.textContent
+			firstTaskElement.querySelector("span:nth-child(3)")!.textContent
 		).toBe("Tags: Shopping, Urgent");
 		const secondTaskElement = taskElements[1];
 		expect(secondTaskElement.textContent).toContain("Task 2");
 		expect(
-      secondTaskElement.querySelector("span:nth-child(1)")!.textContent
+			secondTaskElement.querySelector("span:nth-child(1)")!.textContent
 		).toBe("Date: 2023-11-09");
 		expect(
-      secondTaskElement.querySelector("span:nth-child(2)")!.textContent
+			secondTaskElement.querySelector("span:nth-child(2)")!.textContent
 		).toBe("Status: in progress");
 		expect(
-      secondTaskElement.querySelector("span:nth-child(3)")!.textContent
+			secondTaskElement.querySelector("span:nth-child(3)")!.textContent
 		).toBe("Tags: Work, Important");
 	});
 
@@ -154,5 +152,28 @@ describe("TaskCalendar", () => {
 			"taskList"
 		) as HTMLUListElement;
 		expect(taskListElement.childElementCount).toBe(1);
+	});
+
+	it('should remove task from DOM on successful deletion from Firebase', async () => {
+		taskCalendar = new TestableTaskCalendar("testNamespace");
+		const mockTask: Task = {
+			id: 'mockId',
+			text: 'Mock Task',
+			date: '2023-01-01',
+			status: 'new',
+			tags: ['tag1', 'tag2']
+		};
+
+		jest.spyOn(taskCalendar, 'delToDoListWrapper').mockResolvedValue(true);
+		jest.spyOn(taskCalendar, 'testgetTasks').mockResolvedValue([]);
+
+		await taskCalendar.renderMyTasks([mockTask]);
+
+		const deleteButtonFirebase = document.querySelector('.delete-btn-firebase') as HTMLButtonElement;
+
+		deleteButtonFirebase.click();
+		await taskCalendar.renderMyTasks();
+
+		expect(document.querySelector('.task-item-flex')).toBeNull();
 	});
 });
