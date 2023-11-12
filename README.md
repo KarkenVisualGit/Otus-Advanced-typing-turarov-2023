@@ -1,6 +1,6 @@
 # [![codecov](https://codecov.io/gh/KarkenVisualGit/Otus-Advanced-typing-turarov-2023/graph/badge.svg?token=izppGKtvSy)](https://codecov.io/gh/KarkenVisualGit/Otus-Advanced-typing-turarov-2023/tree/CRUD-API)
 
-## (https://codecov.io/gh/KarkenVisualGit/Otus-Advanced-typing-turarov-2023/tree/CRUD-API) Report
+## Report
 
 > :exclamation: No coverage uploaded for pull request base (`main@78c7f7f`). [Click here to learn what that means](https://docs.codecov.io/docs/error-reference?utm_medium=referral&utm_source=github&utm_content=checks&utm_campaign=pr+comments&utm_term=Karken+Turarov#section-missing-base-commit). The diff coverage is `n/a`.
 
