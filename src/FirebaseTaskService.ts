@@ -84,12 +84,4 @@ export class FirebaseTaskService implements TaskService {
       tags: task.tags.join(", "),
     });
   }
-
-  markAsAdded(taskId: string): void {
-    this.idsFromFirebase.add(taskId);
-  }
-
-  markAsDeleted(taskId: string): void {
-    this.deletedFromFirebase.add(taskId);
-  }
 }

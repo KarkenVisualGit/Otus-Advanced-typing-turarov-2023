@@ -50,7 +50,6 @@ export class TaskCalendar {
 
   async saveTaskInFirebase(task: Task): Promise<void> {
     await this.firebaseTaskService.saveTask(task);
-    // this.firebaseTaskService.markAsAdded(task.id);
   }
 
   async deleteTaskFromFirebase(taskId: string): Promise<boolean> {
