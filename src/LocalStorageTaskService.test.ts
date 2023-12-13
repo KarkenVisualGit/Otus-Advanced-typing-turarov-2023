@@ -1,12 +1,13 @@
 import { LocalStorageTaskService } from "./LocalStorageTaskService";
-import { TaskCalendarUI } from "./TaskCalendarUI";
-import { TaskCalendar, Task } from "./TaskCalendar";
+import { Task } from "./types";
+import { TaskCalendar } from "./TaskCalendar";
 
 jest.mock("./TaskCalendar");
 
 describe("LocalStorageTaskService", () => {
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   let taskCalendar: TaskCalendar;
-  let taskCalendarUI: TaskCalendarUI;
+  /* eslint-enable @typescript-eslint/no-unused-vars */
   let localStorageTaskService: LocalStorageTaskService;
 
   beforeEach(() => {
@@ -22,6 +23,7 @@ describe("LocalStorageTaskService", () => {
       <button id="addOrUpdateTaskButton"></button>
 			<ul id="taskList"></ul>
     `;
+    /* eslint-disable @typescript-eslint/no-unused-vars */
     taskCalendar = {
       getTasksFromFirebase: jest.fn(),
       getTasksLocalStorage: jest.fn(),
@@ -29,7 +31,7 @@ describe("LocalStorageTaskService", () => {
       deleteTaskLocalStorage: jest.fn(),
       deleteTaskFromFirebase: jest.fn(),
     } as unknown as TaskCalendar;
-    taskCalendarUI = new TaskCalendarUI(taskCalendar);
+    /* eslint-enable @typescript-eslint/no-unused-vars */
     localStorageTaskService = new LocalStorageTaskService("testNamespace");
     localStorage.clear();
   });

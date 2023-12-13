@@ -1,5 +1,6 @@
 import { TaskCalendarUI } from "./TaskCalendarUI";
-import { TaskCalendar, Task } from "./TaskCalendar";
+import { TaskCalendar } from "./TaskCalendar";
+import { Task } from "./types";
 
 jest.mock("./TaskCalendar");
 
@@ -51,7 +52,7 @@ describe("TaskCalendarUI", () => {
     expect(taskCalendarUI.renderTasks).toHaveBeenCalled();
   });
 
-  test("handleDeleteTaskFromFirebase should call deleteTaskFromFirebase and renderTasks", async () => {
+  test("handleDeleteTaskFromFirebase should call deleteTask Firebase and renderTasks", async () => {
     const mockTaskId = "testTaskId";
 
     (taskCalendar.deleteTaskFromFirebase as jest.Mock).mockResolvedValue(true);
@@ -264,9 +265,6 @@ describe("TaskCalendarUI applyFilters", () => {
     );
     (taskCalendar.getTasksFromFirebase as jest.Mock).mockResolvedValue(
       mockTasks
-    );
-    (taskCalendar.taskMatchesFilter as jest.Mock).mockImplementation(
-      (task, filter) => true
     );
 
     (document.getElementById("filterSource") as HTMLSelectElement).value =

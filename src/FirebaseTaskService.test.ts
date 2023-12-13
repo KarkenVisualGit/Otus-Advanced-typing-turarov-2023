@@ -1,13 +1,7 @@
+import { getDatabase, remove, set } from "firebase/database";
 import { FirebaseTaskService } from "./FirebaseTaskService";
-import {
-  getDatabase,
-  remove,
-  set,
-  ref,
-  get,
-  Database,
-} from "firebase/database";
-import { TaskCalendar, Task } from "./TaskCalendar";
+import { Task } from "./types";
+
 const mockDb = {};
 jest.mock("firebase/database", () => ({
   getDatabase: jest.fn(),

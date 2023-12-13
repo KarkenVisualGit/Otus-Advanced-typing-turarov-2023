@@ -107,6 +107,7 @@ export class TaskCalendar {
       return [];
     } catch (error) {
       if (error) {
+        // eslint-disable-next-line no-console
         console.error(error);
       }
       return [];
@@ -220,6 +221,7 @@ export class TaskCalendar {
       await this.renderTasks(allTasks);
       return true;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error(error);
       return false;
     }

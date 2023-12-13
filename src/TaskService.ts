@@ -1,11 +1,4 @@
-import { Task } from "./TaskCalendar";
-
-export interface TaskFilter {
-  text?: string;
-  date?: string;
-  status?: "new" | "in progress" | "done";
-  tags?: string[];
-}
+import { Task, TaskFilter } from "./types";
 
 export interface TaskService {
   getTasks(filter?: TaskFilter): Promise<Task[]>;

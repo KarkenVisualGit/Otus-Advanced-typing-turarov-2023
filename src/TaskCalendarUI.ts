@@ -1,7 +1,9 @@
-import { TaskCalendar, Task, TaskFilter } from "./TaskCalendar";
+import { TaskCalendar } from "./TaskCalendar";
+import { Task, TaskFilter } from "./types";
 
 export class TaskCalendarUI {
   private taskCalendar: TaskCalendar;
+
   protected deletedFromFirebase: Set<string> = new Set();
 
   protected idsFromFirebase: Set<string> = new Set();
@@ -228,3 +230,5 @@ export class TaskCalendarUI {
     await this.renderTasks();
   }
 }
+
+export default TaskCalendarUI;

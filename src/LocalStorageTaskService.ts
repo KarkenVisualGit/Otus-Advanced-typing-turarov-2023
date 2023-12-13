@@ -1,5 +1,5 @@
 import { TaskService } from "./TaskService";
-import { Task } from "./TaskCalendar";
+import { Task } from "./types";
 
 export class LocalStorageTaskService implements TaskService {
   private namespace: string;
@@ -15,6 +15,7 @@ export class LocalStorageTaskService implements TaskService {
       localStorage.setItem(this.namespace, JSON.stringify(tasks));
       return true;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error(error);
       return false;
     }
@@ -26,7 +27,7 @@ export class LocalStorageTaskService implements TaskService {
   }
 
   public async saveTask(task: Task): Promise<void> {
-    let tasks = await this.getTasks();
+    const tasks = await this.getTasks();
     const taskIndex = tasks.findIndex((t) => t.id === task.id);
 
     if (taskIndex > -1) {
@@ -38,3 +39,5 @@ export class LocalStorageTaskService implements TaskService {
     localStorage.setItem(this.namespace, JSON.stringify(tasks));
   }
 }
+
+export default LocalStorageTaskService;

@@ -1,7 +1,7 @@
 import "./style/style.css";
-import { TaskCalendar } from "../src/TaskCalendar";
-import { FirebaseTaskService } from "../src/FirebaseTaskService";
-import { LocalStorageTaskService } from "../src/LocalStorageTaskService";
+import { TaskCalendar } from "./TaskCalendar";
+import { FirebaseTaskService } from "./FirebaseTaskService";
+import { LocalStorageTaskService } from "./LocalStorageTaskService";
 import { TaskCalendarUI } from "./TaskCalendarUI";
 
 const localTaskService = new LocalStorageTaskService("local_tasks");

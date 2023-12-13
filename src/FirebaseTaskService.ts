@@ -1,6 +1,3 @@
-import { Task } from "./TaskCalendar";
-import { TaskService } from "./TaskService";
-
 import { initializeApp } from "firebase/app";
 import {
   Database,
@@ -10,6 +7,8 @@ import {
   get,
   remove,
 } from "firebase/database";
+import { Task } from "./types";
+import { TaskService } from "./TaskService";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCZsRRy7BwXZOnYz-3BIo-o4WuHl5XKkCE",
@@ -55,12 +54,14 @@ export class FirebaseTaskService implements TaskService {
       return [];
     } catch (error) {
       if (error) {
+        // eslint-disable-next-line no-console
         console.error(error);
       }
       return [];
     }
   }
 
+  // eslint-disable-next-line class-methods-use-this
   public async deleteTask(taskid: string): Promise<boolean> {
     const reference = ref(db, `todos/${taskid}`);
 
@@ -68,6 +69,7 @@ export class FirebaseTaskService implements TaskService {
       await remove(reference);
       return true;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error(error);
       return false;
     }
@@ -85,3 +87,5 @@ export class FirebaseTaskService implements TaskService {
     });
   }
 }
+
+export default FirebaseTaskService;

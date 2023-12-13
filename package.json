@@ -28,7 +28,6 @@
     "eslint-plugin-n": "^16.2.0",
     "eslint-plugin-prettier": "^5.0.1",
     "eslint-plugin-promise": "^6.1.1",
-    "eslint-plugin-vue": "^9.18.1",
     "html-loader": "^4.2.0",
     "html-webpack-plugin": "^5.5.3",
     "husky": "^8.0.3",
@@ -73,8 +72,8 @@
   },
   "homepage": "https://github.com/KarkenVisualGit/Otus-Advanced-typing-turarov-2023#readme",
   "lint-staged": {
-    "*.js": "eslint --fix",
-    "*.{js,css,md}": "prettier --write"
+    "*.{js,ts}": "eslint --fix",
+    "*.{js,ts,css,md}": "prettier --write"
   },
   "dependencies": {
     "firebase": "^10.5.2"

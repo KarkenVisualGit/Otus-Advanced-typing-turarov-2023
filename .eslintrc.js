@@ -13,14 +13,6 @@ module.exports = {
     "plugin:prettier/recommended",
     "prettier",
   ],
-  overrides: [
-    {
-      files: [".eslintrc.{js,cjs}"],
-      parserOptions: {
-        sourceType: "script",
-      },
-    },
-  ],
   parserOptions: {
     ecmaVersion: "latest",
     parser: "@typescript-eslint/parser",
@@ -35,7 +27,6 @@ module.exports = {
     "no-alert": "warn",
     "no-restricted-globals": "warn",
     "no-promise-executor-return": "warn",
-    "indent": ["error", "tab"],
     "linebreak-style": ["error", "windows"],
     "quotes": ["error", "double", { avoidEscape: true }],
     "semi": ["error", "always"],

@@ -1,7 +1,8 @@
-import { TaskCalendar, Task } from "./TaskCalendar";
+import { TaskCalendar } from "./TaskCalendar";
+import { Task } from "./types";
 import { TaskService } from "./TaskService";
 
-describe("TaskCalendar", () => {
+describe("TaskCalendar tests", () => {
   let localTaskService: TaskService;
   let firebaseTaskService: TaskService;
   let taskCalendar: TaskCalendar;
@@ -236,7 +237,7 @@ describe("TaskCalendar", () => {
     taskCalendar = new TaskCalendar(localTaskService, firebaseTaskService);
   });
 
-  test("deleteTaskFromFirebase should call firebaseTaskService.deleteTask and update task status if successful", async () => {
+  test("deleteTaskFromFirebase should call deleteTask and update task status", async () => {
     const taskId = "1";
     const mockTask: Task = {
       id: taskId,
@@ -260,7 +261,7 @@ describe("TaskCalendar", () => {
     expect(updatedTask?.isDeletedFromFirebase).toBe(true);
   });
 
-  test("deleteTaskFromFirebase should return false if firebaseTaskService.deleteTask fails", async () => {
+  test("deleteTaskFromFirebase should return false if firebase deleteTask fails", async () => {
     const taskId = "2";
     firebaseTaskService.deleteTask.mockResolvedValue(false);
 

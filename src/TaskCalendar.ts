@@ -1,25 +1,11 @@
 import { TaskService } from "./TaskService";
-
-export interface Task {
-  id: string;
-  text: string;
-  date: string;
-  status: "new" | "in progress" | "done";
-  tags: string[];
-  isDeletedLocally: boolean;
-  isDeletedFromFirebase: boolean;
-}
-
-export interface TaskFilter {
-  text?: string;
-  date?: string;
-  status?: "new" | "in progress" | "done";
-  tags?: string[];
-}
+import { Task, TaskFilter } from "./types";
 
 export class TaskCalendar {
   private localTaskService: TaskService;
+
   private firebaseTaskService: TaskService;
+
   constructor(localTaskService: TaskService, firebaseTaskService: TaskService) {
     this.localTaskService = localTaskService;
     this.firebaseTaskService = firebaseTaskService;
@@ -98,3 +84,5 @@ export class TaskCalendar {
     return Date.now().toString(36) + Math.random().toString(36).substring(2);
   }
 }
+
+export default TaskCalendar;
