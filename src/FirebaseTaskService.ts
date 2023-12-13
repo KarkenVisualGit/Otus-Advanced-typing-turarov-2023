@@ -1,5 +1,5 @@
 import { Task } from "./TaskCalendar";
-import { TaskService, TaskFilter } from "./TaskService";
+import { TaskService } from "./TaskService";
 
 import { initializeApp } from "firebase/app";
 import {

@@ -1,4 +1,4 @@
-import { TaskService, TaskFilter } from "./TaskService";
+import { TaskService } from "./TaskService";
 import { Task } from "./TaskCalendar";
 
 export class LocalStorageTaskService implements TaskService {
@@ -24,10 +24,6 @@ export class LocalStorageTaskService implements TaskService {
     const tasksJSON = localStorage.getItem(this.namespace);
     return tasksJSON ? JSON.parse(tasksJSON) : [];
   }
-
-  // public async saveTasks(tasks: Task[]): Promise<void> {
-  //   localStorage.setItem(this.namespace, JSON.stringify(tasks));
-  // }
 
   public async saveTask(task: Task): Promise<void> {
     let tasks = await this.getTasks();

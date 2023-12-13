@@ -39,7 +39,7 @@ export class TaskCalendarUI {
     await this.renderTasks();
   }
 
-  private async handleDeleteTaskLocally(taskId: string): Promise<void> {
+  public async handleDeleteTaskLocally(taskId: string): Promise<void> {
     const deleteSuccessful =
       await this.taskCalendar.deleteTaskLocalStorage(taskId);
     if (deleteSuccessful) {
@@ -47,7 +47,7 @@ export class TaskCalendarUI {
     }
   }
 
-  private async handleDeleteTaskFromFirebase(taskId: string): Promise<void> {
+  public async handleDeleteTaskFromFirebase(taskId: string): Promise<void> {
     const deleteSuccessful =
       await this.taskCalendar.deleteTaskFromFirebase(taskId);
     if (deleteSuccessful) {
@@ -130,7 +130,7 @@ export class TaskCalendarUI {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  protected async clearForm(): Promise<void> {
+  public async clearForm(): Promise<void> {
     (document.getElementById("taskText") as HTMLTextAreaElement).value = "";
     (document.getElementById("taskDate") as HTMLInputElement).value = "";
     (document.getElementById("taskStatus") as HTMLSelectElement).value = "";
