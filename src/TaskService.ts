@@ -11,6 +11,4 @@ export interface TaskService {
   getTasks(filter?: TaskFilter): Promise<Task[]>;
   saveTask(task: Task): Promise<void>;
   deleteTask(taskId: string): Promise<boolean>;
-  // markAsAdded(taskId: string): void;
-  // markAsDeleted(taskId: string): void;
 }
