@@ -1,0 +1,6 @@
+.github
+/coverage/
+/dist
+/prod
+Readme.md
+.vscode

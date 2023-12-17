@@ -1,0 +1,164 @@
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f5f5f5;
+}
+
+.container {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+input,
+select,
+button {
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+button {
+  cursor: pointer;
+  background: #5cb85c;
+  color: white;
+  border: none;
+}
+
+button:hover {
+  background: #4cae4c;
+}
+
+.task-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.task-item {
+  padding: 15px;
+  border: 1px solid #eee;
+  margin-top: 5px;
+  background: #fafafa;
+  border-radius: 4px;
+}
+
+.task-item strong {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.task-text {
+  max-width: 50%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.task-form {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  align-content: center;
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 10px;
+}
+
+.task-form input,
+.task-form select,
+.task-form textarea,
+.task-form button {
+  max-width: 100%;
+  flex: 15% 0 0;
+  padding: 8px;
+  margin: 5px;
+}
+
+.filters {
+  margin: 20px 0;
+  background: #eee;
+  padding: 15px;
+  border-radius: 4px;
+}
+
+.edit-btn {
+  padding: 5px 10px;
+  margin-left: 10px;
+  background: #f0ad4e;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+}
+
+.edit-btn:hover {
+  background: #ec971f;
+}
+
+#addOrUpdateTaskButton,
+#loadFromFirebaseButton {
+  background: #337ab7;
+  border-color: #2e6da4;
+}
+
+#addOrUpdateTaskButton:hover,
+#loadFromFirebaseButton:hover {
+  background: #286090;
+  border-color: #204d74;
+}
+
+.delete-btn,
+.delete-btn-firebase {
+  padding: 5px 10px;
+  margin-left: 10px;
+  background: #d9534f;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+}
+
+.delete-btn:hover,
+.delete-btn-firebase:hover {
+  background: #c9302c;
+}
+
+.delete-btn-firebase:disabled,
+.delete-btn:disabled {
+  color: #757575;
+  background-color: #e0e0e0;
+  border: 1px solid #bdbdbd;
+  cursor: not-allowed;
+}
+
+.task-item-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #eee;
+  margin-top: 5px;
+  gap: 10px;
+  background: rgb(165, 203, 176);
+  border-radius: 4px;
+}
+
+@media (max-width: 540px) {
+  .task-item-flex {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .task-form {
+    max-width: 100%;
+    min-width: 0;
+    flex-direction: column;
+  }
+}
